@@ -20,6 +20,10 @@ export class TodoAccess {
       const result = await this.docClient.scan({
         TableName: this.todosTable
       }).promise();
+
+      // const result = await this.docClient.query({
+      //   Key: { todoId, userId }
+      // }).promise()
   
       const items = result.Items;
       return items as TodoItem[];
@@ -34,23 +38,60 @@ export class TodoAccess {
       return todo;
     }
 
-    async updateTodo(todo: TodoUpdate, todoId): Promise<TodoUpdate> {
+    async updateTodo(todo: TodoUpdate, todoId: string, userId: string): Promise<TodoUpdate> {
       await this.docClient.update({
         TableName: this.todosTable,
-        Key: { todoId: todoId},
-        UpdateExpression: "set #todoName=:r, dueDate=:p, done=:a",
+        Key: { todoId, userId},
+        ExpressionAttributeNames: {
+          "#todo_name": "name"
+        },
+        UpdateExpression: "set #todo_name=:r, dueDate=:p, done=:a",
         ExpressionAttributeValues:{
-            ":r":  todo.name,
+            ":r": todo.name,
             ":p": todo.dueDate,
             ":a": todo.done
-        },
-        ExpressionAttributeNames: {
-          "#todoName": "name"
         },
         ReturnValues:"UPDATED_NEW"
       }).promise()
   
       return todo;
+    }
+
+    async updateTodoAttachment(attachmentUrl: string, todoId: string, userId: string) {
+      await this.docClient.update({
+        TableName: this.todosTable,
+        Key: { todoId, userId},
+        UpdateExpression: "set attachmentUrl=:url",
+        ExpressionAttributeValues:{
+            ":url": attachmentUrl,
+        },
+        ReturnValues:"UPDATED_NEW"
+      }).promise()
+    }
+
+    async deleteTodo(todoId: string, userId: string): Promise<{}> {
+      let result;
+      try {
+        result = await this.docClient.delete({
+          TableName: this.todosTable,
+          Key: { todoId, userId},
+        }).promise()
+      } catch(err) {
+        result = err
+      }
+      return result
+    }
+
+    async getTodo(todoId: string, userId: string): Promise<TodoItem> {
+      console.log('Getting todo')
+      const result = await this.docClient.get({
+        TableName: this.todosTable,
+        Key: { todoId, userId}
+      }).promise();
+      console.log("item", result)
+      
+      const item = result.Item;
+      return item as TodoItem;
     }
 
 }

@@ -32,7 +32,8 @@ export async function createTodo(
 
 export async function updateTodo(
   updateTodoRequest: UpdateTodoRequest,
-  todoId: string
+  todoId: string,
+  userId: string
 ): Promise<TodoUpdate> {
 
   return await todoAccess.updateTodo({
@@ -40,6 +41,32 @@ export async function updateTodo(
     dueDate: updateTodoRequest.dueDate,
     done: false,
   },
-  todoId)
+  todoId, userId)
+}
+
+export async function updateTodoAttachment(
+  attachmentUrl: string,
+  todoId: string,
+  userId: string
+) {
+ await todoAccess.updateTodoAttachment(
+  attachmentUrl,
+  todoId,
+  userId,
+ )
+}
+
+export async function deleteTodo(
+  todoId: string,
+  userId: string
+): Promise<{}> {
+  return await todoAccess.deleteTodo(todoId, userId)
+}
+
+export async function getTodo(
+  todoId: string,
+  userId: string
+): Promise<{}> {
+  return await todoAccess.getTodo(todoId, userId)
 }
 
