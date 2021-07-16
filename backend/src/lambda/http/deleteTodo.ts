@@ -41,6 +41,5 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
 const todoExists = async (todoId: string, userId: string) => {
   const result = await getTodo(todoId, userId)
-  console.log("result", result)
   return !!result
 }

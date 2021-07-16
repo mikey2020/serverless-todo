@@ -8,8 +8,8 @@ import { parseUserId } from '../auth/utils';
 
 const todoAccess = new TodoAccess()
 
-export async function getAllTodos(): Promise<TodoItem[]> {
-  return todoAccess.getAllTodos();
+export async function getAllTodos(userId: string): Promise<TodoItem[]> {
+  return todoAccess.getAllTodos(userId);
 }
 
 export async function createTodo(
@@ -39,7 +39,7 @@ export async function updateTodo(
   return await todoAccess.updateTodo({
     name: updateTodoRequest.name,
     dueDate: updateTodoRequest.dueDate,
-    done: false,
+    done: updateTodoRequest.done,
   },
   todoId, userId)
 }

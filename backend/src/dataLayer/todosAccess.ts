@@ -14,16 +14,16 @@ export class TodoAccess {
       private readonly todosTable = process.env.TODOS_TABLE) {
     }
   
-    async getAllTodos(): Promise<TodoItem[]> {
+    async getAllTodos(userId: string): Promise<TodoItem[]> {
       console.log('Getting all todos')
-  
-      const result = await this.docClient.scan({
+      
+      const result = await this.docClient.query({
+        ExpressionAttributeValues: {
+          ':s': userId,
+         },
+        KeyConditionExpression: 'userId = :s',
         TableName: this.todosTable
-      }).promise();
-
-      // const result = await this.docClient.query({
-      //   Key: { todoId, userId }
-      // }).promise()
+      }).promise()
   
       const items = result.Items;
       return items as TodoItem[];
